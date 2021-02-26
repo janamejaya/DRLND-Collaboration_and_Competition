@@ -53,7 +53,7 @@ As done for DQN, a local and a target network are used for the Actor.
 
 The Critic is the action-value function approximator neural network that takes the current state and selected actions of both agents as input and outputs the action value for the given agent. The Critic neural network architecture is shown next
 
-[State,Action] -> [Hidden layer/256 neurons] -> [Hidden layer/128 neurons] -> Action-value function Q(s,a) [output/1-dimension]
+[2xState,2xAction] -> [Hidden layer/256 neurons] -> [Hidden layer/128 neurons] -> Action-value function Q(s,a) [output/1-dimension]
 
 Since Q(s,a) is a continuous number, a recified linear activation function was used for all hidden and output layers
 
@@ -90,6 +90,7 @@ At the start of an experiment
 
 Since neural network optimization and exploration of the environment are stochastic processes, each experiment involves a different set of trajectories. To get meaningful statistics, the experiment should be repeated several times. Accordingly, the following setup was used
 
+- Discount factor : 1 (no discounting)
 - Maximum number of episodes per experiment: 5000
 - Maximum number of steps per episode : unconstrained as we want to agents to sample the terminal state whenever it is attained.
 - Number of independent experiments: 2
