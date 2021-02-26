@@ -1,30 +1,35 @@
 ## Report
 
-The objective of the project was to train 20 independent agents each trying to move their double jointed arm in order to maintain contact with a target location.
+The objective of the project was to use self-play in order to teach two RL agents how to play tennis.
 
-### State and action space
+### State space
 
-The observation space consists of 33 variables corresponding to position, rotation, velocity, and angular velocities of the arm. Each action is a vector with four numbers, corresponding to torque applicable to two joints. Every entry in the action vector should be a number between -1 and 1.
+The observation space for each agent consists of 8 variables corresponding to the position and velocity of the ball and racket i.e 8x3 = 24 variables. Each agent receives its own, local observation. So there are a total of 24x2 = 48 variables jointly specifying the environment for the two agents.
+
+### Action space
+For each agent, two continuous actions are available and these correspond to movement toward (or away from) the net, and jumping. So there are a total of 4 action variables, 2 per agent.
 
 ### Reward
 
-A reward of +0.1 was given each step for which the agents arm was at the correct location.
+If an agent hits the ball over the net, it receives a reward of +0.1. If an agent lets a ball hit the ground or hits the ball out of bounds, it receives a reward of -0.01.
 
-- Discount factor: 0.99
+### Task description and successful completion
+The task is episodic and ends when any agent recieves a reward of -0.01.
+
+After each episode ends, we add up the rewards that each agent received (**without discounting**), to get a score for each agent. This yields 2 (potentially different) scores. 
+
+We then take the maximum of these 2 scores. This yields a single score for each episode.
+
+when the average (over 100 episodes) of those scores over 100 consecutive episodes is at least +0.5, the environment is considered as solved.
 
 ### Learning Algorithm
 
-The approach for training the agent was based on the following factors
+I chose Multi-agent Deep Deterministic Policy Gradient (MADDPG)[https://arxiv.org/abs/1706.02275v4] as the algorithm to "solve" this problem.
 
-1. Each agent acts independently of the others, so only one agents policy needs to be trained
-2. The agents controlled its actions by changing the torque applied to its two joints. The agents actions are continuous and the algorithm must be able to deal with them.
-3. The experience of each of the 20 agents can be stored and combined in order to train the agent.
-4. The algorithm should be fast and stable enough
+It is a simple extension of Deep Deterministic Policy Gradient which is an actor-critic method. 
 
-Due to its similarity with [Deep Q-learning](https://www.nature.com/articles/nature14236) and ease of implementation, I selected the Deep Deterministic Policy Gradient (DDPG) algorithm.
-The algorithm is summarized below
+Each actor acts based on a policy that depends only on its local state space observation whereas each critic acts based on the joint state space observation and actions of each agent.
 
-![](https://spinningup.openai.com/en/latest/_images/math/5811066e89799e65be299ec407846103fcf1f746.svg)
 
 ### Function approximation with Neural Networks.
 
